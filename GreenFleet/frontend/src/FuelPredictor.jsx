@@ -61,7 +61,7 @@ export default function FuelPredictor() {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api/v1/predict-fuel",
+        "https://pvtgreenfleet-production.up.railway.app",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
