@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "GreenFleet Runtime Architecture",
+    "output": "greenfleet-runtime.architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Spandanmali/pvtgreenfleet.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4d0b05308841d758adbc42da815d328f771ef68c"
+    },
+    "views": [
+      {
+        "id": "runtime-request",
+        "label": "Runtime request path",
+        "focus": ["browser", "frontend", "backend", "database"],
+        "note": "Follow a browser request from the React application into the FastAPI service and persistence layer."
+      },
+      {
+        "id": "prediction-optimization",
+        "label": "Prediction and optimization",
+        "focus": ["frontend", "backend", "ml", "optimization"],
+        "note": "See how the backend combines fuel prediction models with route optimization algorithms."
+      },
+      {
+        "id": "deployment-flow",
+        "label": "Local deployment flow",
+        "focus": ["source", "frontend", "backend", "database"],
+        "note": "Trace the repository startup scripts that launch the frontend and backend against the database setup."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "User browser",
+      "sublabel": "Fleet operator",
+      "pos": [40, 300],
+      "size": [150, 64],
+      "sources": [{ "path": "GreenFleet/frontend/index.html", "label": "entry document" }]
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "React frontend",
+      "sublabel": "Vite + TypeScript/JSX",
+      "tag": "Fuel prediction UI",
+      "pos": [270, 300],
+      "size": [170, 64],
+      "sources": [
+        { "path": "GreenFleet/frontend/src/main.tsx", "label": "bootstrap" },
+        { "path": "GreenFleet/frontend/src/FuelPredictor.jsx", "label": "prediction view" },
+        { "path": "GreenFleet/frontend/package.json", "label": "build scripts" }
+      ]
+    },
+    {
+      "id": "backend",
+      "type": "backend",
+      "label": "FastAPI backend",
+      "sublabel": "Python API service",
+      "tag": "REST / JSON",
+      "pos": [520, 300],
+      "size": [180, 64],
+      "sources": [
+        { "path": "GreenFleet/backend/app/main.py", "label": "application entrypoint" },
+        { "path": "GreenFleet/backend/app/api/v1/predict.py", "label": "prediction API" },
+        { "path": "GreenFleet/backend/requirements.txt", "label": "runtime dependencies" }
+      ]
+    },
+    {
+      "id": "ml",
+      "type": "backend",
+      "label": "ML prediction service",
+      "sublabel": "Joblib fuel model",
+      "tag": "Feature mapping",
+      "pos": [520, 150],
+      "size": [180, 64],
+      "sources": [
+        { "path": "GreenFleet/backend/app/services/ml_services.py", "label": "service layer" },
+        { "path": "GreenFleet/backend/app/ml/fuel_model.py", "label": "model wrapper" },
+        { "path": "GreenFleet/backend/app/ml/fuel_model.joblib", "label": "trained model" }
+      ]
+    },
+    {
+      "id": "optimization",
+      "type": "backend",
+      "label": "Route optimization",
+      "sublabel": "GA + QPSO algorithms",
+      "tag": "Evaluator",
+      "pos": [750, 150],
+      "size": [180, 64],
+      "sources": [
+        { "path": "GreenFleet/backend/app/optimization/evaluator.py", "label": "objective evaluation" },
+        { "path": "GreenFleet/backend/app/optimization/ga/optimizer.py", "label": "genetic algorithm" },
+        { "path": "GreenFleet/backend/app/optimization/qpso/optimizer.py", "label": "QPSO optimizer" }
+      ]
+    },
+    {
+      "id": "database",
+      "type": "database",
+      "label": "Application database",
+      "sublabel": "Configured persistence",
+      "pos": [750, 300],
+      "size": [180, 64],
+      "sources": [
+        { "path": "GreenFleet/backend/app/db/database.py", "label": "database connection" },
+        { "path": "GreenFleet/setup-db.sql", "label": "schema setup" }
+      ]
+    },
+    {
+      "id": "source",
+      "type": "cloud",
+      "label": "Repository + startup scripts",
+      "sublabel": "PowerShell deployment flow",
+      "tag": "Local environment",
+      "pos": [270, 420],
+      "size": [210, 64],
+      "sources": [
+        { "path": "GreenFleet/start-frontend.ps1", "label": "frontend launcher" },
+        { "path": "GreenFleet/start-backend.ps1", "label": "backend launcher" }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "GreenFleet application runtime",
+      "wraps": ["frontend", "backend", "ml", "optimization", "database"]
+    },
+    {
+      "kind": "security-group",
+      "label": "Application service boundary",
+      "wraps": ["backend", "ml", "optimization", "database"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "browser-to-frontend",
+      "from": "browser",
+      "to": "frontend",
+      "label": "HTTP / static assets",
+      "variant": "emphasis",
+      "labelDy": 56
+    },
+    {
+      "id": "frontend-to-backend",
+      "from": "frontend",
+      "to": "backend",
+      "label": "REST / JSON",
+      "variant": "emphasis"
+    },
+    {
+      "id": "backend-to-ml",
+      "from": "backend",
+      "to": "ml",
+      "label": "predict fuel",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": -72
+    },
+    {
+      "id": "backend-to-optimization",
+      "from": "backend",
+      "to": "optimization",
+      "label": "optimize route",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 72
+    },
+    {
+      "id": "backend-to-database",
+      "from": "backend",
+      "to": "database",
+      "label": "read / write",
+      "variant": "default",
+      "labelDy": 56
+    },
+    {
+      "id": "ml-to-optimization",
+      "from": "ml",
+      "to": "optimization",
+      "label": "fuel objective",
+      "fromSide": "right",
+      "toSide": "left",
+      "route": "straight",
+      "labelDy": 56
+    },
+    {
+      "id": "source-to-frontend",
+      "from": "source",
+      "to": "frontend",
+      "label": "npm run dev / build",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": -76
+    },
+    {
+      "id": "source-to-backend",
+      "from": "source",
+      "to": "backend",
+      "label": "uvicorn startup",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDx": 76
+    },
+    {
+      "id": "source-to-database",
+      "from": "source",
+      "to": "database",
+      "label": "SQL setup",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Request path",
+      "items": ["Browser loads the Vite-built React experience", "Frontend calls the FastAPI prediction surface", "Backend reads and writes configured application state"]
+    },
+    {
+      "dot": "emerald",
+      "title": "Decision services",
+      "items": ["Joblib artifacts provide fuel predictions", "GA and QPSO implementations evaluate route choices"]
+    },
+    {
+      "dot": "amber",
+      "title": "Deployment flow",
+      "items": ["PowerShell scripts launch frontend and backend locally", "setup-db.sql prepares database state before runtime"]
+    }
+  ]
+}
